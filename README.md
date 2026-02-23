@@ -36,6 +36,11 @@ If you zoom out, it has four stages:
 
 The `runs/` scripts are curated entry points that chain these ideas into reproducible experiments, while the `nanochat/` package contains the reusable core pieces.
 
+For visual references, see [docs/architecture_diagrams.md](docs/architecture_diagrams.md), which contains:
+- a high-level architecture diagram,
+- an end-to-end training-to-chat sequence diagram, and
+- an inference request lifecycle activity diagram.
+
 ## Concepts to learn before building something similar
 
 If your goal is to eventually build a repo like this from scratch, this is a practical study order:
