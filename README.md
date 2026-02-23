@@ -24,6 +24,46 @@ See [dev/LEADERBOARD.md](dev/LEADERBOARD.md) for more docs on how to interpret a
 
 ## Getting started
 
+## What this repository does (quick mental model)
+
+`nanochat` is an end-to-end LLM training and serving pipeline with intentionally small, readable code.
+If you zoom out, it has four stages:
+
+1. **Tokenizer stage** (`scripts/tok_train.py`, `scripts/tok_eval.py`): learn how raw text gets split into tokens.
+2. **Base model stage** (`scripts/base_train.py`, `scripts/base_eval.py`): pretrain a GPT-style transformer on internet-scale text.
+3. **Chat alignment stage** (`scripts/chat_sft.py`, `scripts/chat_rl.py`, `scripts/chat_eval.py`): adapt the base model to instruction/chat behavior.
+4. **Inference/UI stage** (`scripts/chat_cli.py`, `scripts/chat_web.py`, `nanochat/engine.py`): serve the model for interactive use.
+
+The `runs/` scripts are curated entry points that chain these ideas into reproducible experiments, while the `nanochat/` package contains the reusable core pieces.
+
+## Concepts to learn before building something similar
+
+If your goal is to eventually build a repo like this from scratch, this is a practical study order:
+
+1. **Tokens and tokenization**
+   - Why language models predict next *token* and not next character/word.
+   - BPE basics, vocabulary size tradeoffs, compression rate (bits per byte).
+2. **Transformer fundamentals**
+   - Embeddings, positional information, self-attention, MLP blocks, residuals, layer norm.
+   - Causal masking and why autoregressive decoding works.
+3. **Training dynamics**
+   - Cross-entropy loss, optimizer behavior (AdamW), learning-rate schedules, weight decay.
+   - Batch size vs gradient accumulation, mixed precision, distributed data parallel.
+4. **Data pipeline design**
+   - Dataset curation, sharding, streaming, deterministic preprocessing.
+   - Train/val splits and robust eval loops.
+5. **Evaluation and scaling**
+   - Perplexity / bits-per-byte vs downstream capability metrics.
+   - Compute budgets, scaling laws, and "strong baseline" experiment hygiene.
+6. **Post-training for chat models**
+   - SFT datasets, conversation formatting, prompt templates.
+   - RL-style finetuning ideas and task-based evaluation.
+7. **Inference engineering**
+   - KV cache, sampling controls (temperature/top-k), latency-throughput tradeoffs.
+   - Safe/robust serving interfaces (CLI + web).
+
+Tip: a good way to learn is to run one script per stage, then trace which functions it calls in `nanochat/`.
+
 ### Reproduce and talk to GPT-2
 
 The most fun you can have is to train your own GPT-2 and talk to it. The entire pipeline to do so is contained in the single file [runs/speedrun.sh](runs/speedrun.sh), which is designed to be run on an 8XH100 GPU node. Boot up a new 8XH100 GPU box from your favorite provider (e.g. I use and like [Lambda](https://lambda.ai/service/gpu-cloud)), and kick off the training script:
